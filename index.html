@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Permutation Test: Visual Explanation</title>
+	<meta name="description" content="Permutation Test: Visual Explanation">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<link rel="stylesheet" href="css/permutationTest.css">
+	<script src=assets/rough.min.js></script>
+	<script src=assets/seedrandom.min.js></script>
+</head>
+<body>
+    	<section id='intro'>
+		<h1 class='intro__hed'>Carbonara Index</h1>
+		<div id="chart"></div>
+	</section>
+	
+	<script>
+		// Load and visualize the carbonara index data
+		d3.json('https://raw.githubusercontent.com/gimbear/carbonara_index/refs/heads/main/carbonara_index.json').then(function(data) {
+			// Set up dimensions and margins
+			const margin = {top: 20, right: 100, bottom: 40, left: 50};
+			const width = 900 - margin.left - margin.right;
+			const height = 500 - margin.top - margin.bottom;
+			
+			// Parse date and create scales
+			const parseDate = d3.timeParse("%Y-%m");
+			data.forEach(d => {
+				d.date = parseDate(d.date);
+			});
+			
+			const x = d3.scaleTime()
+				.domain(d3.extent(data, d => d.date))
+				.range([0, width]);
+			
+			const y = d3.scaleLinear()
+				.domain([90, d3.max(data, d => Math.max(d.Pasta, d.Pork, d.Eggs, d['Hard Cheese'], d.Carbonara_index))])
+				.range([height, 0]);
+			
+			// Create color scale
+			const color = d3.scaleOrdinal()
+				.domain(['Pasta', 'Pork', 'Eggs', 'Hard Cheese', 'Carbonara_index'])
+				.range(['#FF6B35', '#F7931E', '#FFD23F', '#06FFA5', '#1B263B']);
+			
+			// Create SVG
+			const svg = d3.select("#chart")
+				.append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", `translate(${margin.left},${margin.top})`);
+			
+			// Create line generator
+			const line = d3.line()
+				.x(d => x(d.date))
+				.y(d => y(d.value))
+				.curve(d3.curveMonotoneX);
+			
+			// Prepare data for lines
+			const ingredients = ['Pasta', 'Pork', 'Eggs', 'Hard Cheese', 'Carbonara_index'];
+			const lineData = ingredients.map(ingredient => ({
+				name: ingredient,
+				values: data.map(d => ({
+					date: d.date,
+					value: d[ingredient]
+				}))
+			}));
+			
+			// Add axes
+			svg.append("g")
+				.attr("transform", `translate(0,${height})`)
+				.call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y")));
+			
+			svg.append("g")
+				.call(d3.axisLeft(y));
+			
+			// Add axis labels
+			svg.append("text")
+				.attr("transform", "rotate(-90)")
+				.attr("y", 0 - margin.left)
+				.attr("x", 0 - (height / 2))
+				.attr("dy", "1em")
+				.style("text-anchor", "middle")
+				.text("Price Index");
+			
+			svg.append("text")
+				.attr("transform", `translate(${width / 2}, ${height + margin.bottom})`)
+				.style("text-anchor", "middle")
+				.text("Year");
+			
+			// Add lines
+			const lines = svg.selectAll(".line")
+				.data(lineData)
+				.enter().append("g")
+				.attr("class", "line");
+			
+			lines.append("path")
+				.attr("d", d => line(d.values))
+				.style("stroke", d => color(d.name))
+				.style("stroke-width", d => d.name === 'Carbonara_index' ? 3 : 1.5)
+				.style("fill", "none")
+				.style("opacity", d => d.name === 'Carbonara_index' ? 1 : 0.7);
+			
+			// Add legend
+			const legend = svg.selectAll(".legend")
+				.data(ingredients)
+				.enter().append("g")
+				.attr("class", "legend")
+				.attr("transform", (d, i) => `translate(${width + 10}, ${i * 20})`);
+			
+			legend.append("rect")
+				.attr("x", 0)
+				.attr("width", 18)
+				.attr("height", 18)
+				.style("fill", color);
+			
+			legend.append("text")
+				.attr("x", 24)
+				.attr("y", 9)
+				.attr("dy", ".35em")
+				.style("text-anchor", "start")
+				.text(d => d.replace('_', ' '));
+			
+			// Add title
+			svg.append("text")
+				.attr("x", width / 2)
+				.attr("y", 0 - (margin.top / 2))
+				.attr("text-anchor", "middle")
+				.style("font-size", "16px")
+				.style("font-weight", "bold")
+				.text("Carbonara Ingredients Price Index (2015-2025)");
+		});
+	</script>
+</body>
+</html>
