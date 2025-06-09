@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Test</title>
+	<meta name="description" content="test">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<script src="https://unpkg.com/scrollama"></script>
+	<link rel="stylesheet" href="css/permutationTest.css">
+	<link rel="stylesheet" href="css/style.css">
+	<script src=assets/rough.min.js></script>
+	<script src=assets/seedrandom.min.js></script>
+</head>
+
+<body>
+	<main>
+		<section id='intro'>
+			<h1 class='intro__hed'>Carbonara Index</h1>
+			<p>Scroll down to explore how each ingredient contributes to the carbonara price index over time.</p>
+		</section>
+
+		<section id='scrolly'>
+			<figure>
+				<div id="chart"></div>
+			</figure>
+
+			<article>
+				<div class='step' data-step='0'>
+					<p>The Carbonara Index tracks the price changes of key carbonara ingredients from 2015 to 2025.</p>
+				</div>
+				<div class='step' data-step='1'>
+					<p><strong>Pasta</strong> shows the most volatile price movements, with significant spikes in 2021
+						and 2024.</p>
+				</div>
+				<div class='step' data-step='2'>
+					<p><strong>Pork</strong> prices have remained relatively stable with a gradual upward trend over the
+						decade.</p>
+				</div>
+				<div class='step' data-step='3'>
+					<p><strong>Eggs</strong> experienced dramatic price increases, particularly during 2022-2023 due to
+						avian flu outbreaks.</p>
+				</div>
+				<div class='step' data-step='4'>
+					<p><strong>Hard Cheese</strong> shows steady price growth with some acceleration in recent years.
+					</p>
+				</div>
+				<div class='step' data-step='5'>
+					<p>The <strong>Carbonara Index</strong> combines all ingredients, showing the overall trend in
+						carbonara affordability.</p>
+				</div>
+				<div class='step' data-step='6'>
+					<p>Comparing the <strong>Carbonara Index</strong> (solid line) with the <strong>KPI Index</strong>
+						(dashed line), we can see how carbonara inflation compares to general price inflation.</p>
+				</div>
+			</article>
+		</section>
+	</main>
+
+	<script>
+
+		const scroller = scrollama();
+
+		function highlightLine(step) {
+			switch (step) {
+				case 0:
+					// Show all lines at medium opacity
+					d3.selectAll('.line-path').style('opacity', 0.6);
+					break;
+				case 1:
+					// Highlight Pasta
+					d3.select('.line-pasta').style('opacity', 1);
+					break;
+				case 2:
+					// Highlight Pork
+					d3.select('.line-pork').style('opacity', 1);
+					break;
+				case 3:
+					// Highlight Eggs
+					d3.select('.line-eggs').style('opacity', 1);
+					break;
+				case 4:
+					// Highlight Hard Cheese
+					d3.select('.line-hard-cheese').style('opacity', 1);
+					break;
+				case 5:
+					// Highlight Carbonara Index
+					d3.select('.line-carbonara-index').style('opacity', 1);
+					break;
+				case 6:
+					// Highlight both Carbonara Index and KPI
+					d3.select('.line-carbonara-index').style('opacity', 1);
+					d3.select('.line-kpi-index').style('opacity', 1);
+					break;
+			}
+		}
+
+		// Setup scrollama
+		scroller
+			.setup({
+				step: '.step',
+				offset: 0.5,
+				debug: false
+			})
+			.onStepEnter(response => {
+				const step = +response.element.dataset.step;
+				highlightLine(step);
+
+				// Update step styling
+				d3.selectAll('.step').classed('is-active', false);
+				d3.select(response.element).classed('is-active', true);
+			});
+
+		// Initialize with first step
+		highlightLine(0);
+
+	</script>
+</body>
+
+</html>
