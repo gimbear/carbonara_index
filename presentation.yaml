@@ -402,7 +402,7 @@ chapters:
           - type: syntax
             lexer: "html" # optional: language to highlight (default: python)
             theme: "ansi_dark" # optional: color theme
-      - description: "Vi lägger till datan i linjer generatorn"
+      - description: "Vi lägger till [bold cyan]datan[/] i linjer generatorn"
         focus:
           - type: range
             start: 15
@@ -421,4 +421,323 @@ chapters:
           - type: range
             start: 140
             end: 575
+            style: "bright_yellow bold"
+
+            
+  - title: "Scrollama Start"
+    code: |
+      <script src="https://unpkg.com/scrollama"></script>
+    steps:
+      - description: "Inkluderar Scrollama via CDN vanilla‑js style"
+        focus:
+          - type: literal
+            text: "scrollama"
+            style: "bold yellow"
+
+  - title: "Scrollama Struktur"
+    code: |
+      <section id='scrolly'>
+        <figure>
+          <div id="chart"></div>
+        </figure>
+
+        <article>
+          <div class='step' data-step='0'>
+            <p>STEP 0</p>
+          </div>
+          <div class='step' data-step='1'>
+            <p>STEP 1</p>
+          </div>
+          <div class='step' data-step='2'>
+            <p>STEP 2</p>
+          </div>
+          <div class='step' data-step='3'>
+            <p>STEP 3</p>
+          </div>
+        </article>
+      </section>
+    steps:
+      - description: "Scrollama använder ett `<section>`-element med id `scrolly` som wrapper."
+        focus:
+          - type: literal
+            text: "<section id='scrolly'>"
+            style: "bold cyan"
+      - description: "Inuti `figure` lägger vi en `div` som håller vår grafik."
+        focus:
+          - type: line_containing
+            pattern: "id=\"cnerar vi två skalor; [bold cyan]tidsskala[/] och [bold orange]linjär skala[/]."
+        focus:
+          - type: line
+            line_number: 7
+            style: "bright_cyan bold"
+          - type: line
+            line_number: 11
+            style: "yellow bold"
+      - description: "Sedan definierar vi skalans [bold cyan]domain[/] och [bold orange]range[/]. Man kan föreställa sig [bold cyan]'domain' som talen på en linjal[/] och [bold orange]'range' som linjalens längd[/]."
+        focus:
+          # X-skalan
+          - type: line_containing
+            pattern: ".domain("
+            style: "bright_cyan bold"
+          - type: literal # highlight .range(…)
+            text: ".range("
+            style: "yellow bold"
+            match_index: 0
+          # Y-skalan
+          - type: line_containing
+            pattern: ".range("
+            style: "yellow bold"
+          - type: line
+            line_number: 13
+  - title: "Scrollama CSS"
+    code: |
+      #scrolly {
+        position: relative;
+      }
+
+      figure {
+        position: -webkit-sticky;
+        position: sticky;
+      }
+
+      article {
+        position: relative;
+        padding: 0;
+        max-width: 20rem;
+        margin: 0 auto;
+      }
+
+      .step {
+        margin: 0 auto 2rem auto;
+        padding: 1.5rem;
+        border: 1px solid #333;
+        color: #fff;
+        background-color: #333;
+        box-shadow: 2px 5px 2px rgba(0, 0, 0, .2);
+      }
+
+      .step:last-child {
+        margin-bottom: 0;
+      }
+
+      .step.is-active {
+        background-color: orange;
+        color: #3b3b3b;
+      }
+    steps:
+      - description: "Vi positionerar wrapper-elementet `#scrolly`."
+        focus:
+          - type: line_containing
+            pattern: "#scrolly"
+            style: "bold cyan"
+      - description: "Elementet `figure` görs sticky för att hålla grafen synlig."
+        focus:
+          - type: literal
+            text: "sticky"
+            style: "bold yellow"
+      - description: "Vi stylar `.step`-elementen med padding, färg och skugga."
+        focus:
+          - type: literal
+            text: ".step"
+            style: "bold green"
+      - description: "När ett steg är aktivt får det en annan bakgrund med `.step.is-active`."
+        focus:
+          - type: literal
+            text: ".step.is-active"
+            style: "bold red"
+            
+  - title: "Scrollama JavaScript"
+    code: |
+      const scroller = scrollama(); // initiera scrollama
+
+      scroller
+        .setup({
+          container: '#scrolly',    // vårt scrollområde
+          step: '.step',            // varje steg i berättelsen
+          offset: 0.5,              // trigger sker när steget är i mitten av skärmen
+          debug: true               // visar visuell hjälplinje
+        })
+        .onStepEnter(response => {
+          const step = +response.element.dataset.step;
+
+          // Använder vi senare
+          d3.selectAll('.step').classed('is-active', false);
+          d3.select(response.element).classed('is-active', true);
+          highlightLine(step);
+        });
+    steps:
+      - description: "Vi skapar en Scrollama-instans som hanterar scroll-triggers automatiskt med IntersectionObserver."
+        focus:
+          - type: literal
+            text: "scrollama()"
+            style: "bold green"
+      - description: "`setup` definierar vilka element Scrollama ska observera och när i viewporten det ska triggas."
+        focus:
+          - type: literal
+            text: "setup({"
+            style: "bold yellow"
+      - description: "När användaren scrollar till ett nytt steg körs `onStepEnter` – här aktiverar vi grafik och markerar aktiv text."
+        focus:
+          - type: literal
+            text: "onStepEnter"
+            style: "bold cyan"
+      - description: "Vi markerar det aktiva steget visuellt och uppdaterar grafen baserat på vilket steg vi är på."
+        focus:
+          - type: literal
+            text: "is-active"
+            style: "bold magenta"
+          - type: literal
+            text: "highlightLine"
+            style: "bold red"
+      - description: Nu kikar vi på resultatet
+        focus:
+          - type: syntax
+            lexer: "js" # optional: language to highlight (default: python)
+            theme: "ansi_dark" # optional: color theme
+            
+  - title: "D3 Highlighting"
+    code: |
+      <script>
+        // Reset all lines to low opacity
+        function resetLines() {
+          d3.selectAll('.line-path').style('opacity', 0.2);
+        }
+
+        // Highlight specific line by class name
+        function highlightLine(className) {
+          resetLines();
+          d3.select(`.line-${className}`)
+            .style('opacity', 1)
+            .style('stroke-width', '3px');
+        }
+
+        // Show all lines
+        function showAllLines() {
+          d3.selectAll('.line-path')
+            .style('opacity', 0.8)
+            .style('stroke-width', (d) => 
+              d.name === "Carbonara_index" ? 3 : 1.5
+            );
+        }
+      </script>
+    steps:
+      - description: "För att göra linjerna interaktiva behöver vi funktioner som kan [bold cyan]highlighta[/] och [bold orange]dölja[/] olika linjer baserat på användarens scroll-position."
+        focus:
+          - type: syntax
+            lexer: "js"
+            theme: "ansi_dark"
+      - description: "Vi skapar en [bold cyan]resetLines()[/] funktion som sätter alla linjer till låg opacity (0.2)"
+        focus:
+          - type: range
+            start: 15
+            end: 80
+            style: "bright_cyan bold"
+      - description: "Sedan en [bold orange]highlightLine()[/] funktion som tar ett klassnamn och highlighter den specifika linjen"
+        focus:
+          - type: range
+            start: 80
+            end: 190
+            style: "bright_yellow bold"
+      - description: "Och slutligen [bold green]showAllLines()[/] för att visa alla linjer samtidigt"
+        focus:
+          - type: range
+            start: 190
+            end: 300
             style: "bright_green bold"
+
+  - title: "Scrollama + D3 Integration"
+    code: |
+      <script>
+        // Komplett highlightLine funktion för alla scroll-steg
+        function highlightLine(step) {
+          // Reset alla linjer först
+          d3.selectAll('.line-path').style('opacity', 0.2);
+          
+          switch (step) {
+            case 0:
+              // Visa alla linjer med medium opacity
+              d3.selectAll('.line-path').style('opacity', 0.6);
+              break;
+            case 1:
+              // Highlighta Pasta
+              d3.select('.line-pasta').style('opacity', 1);
+              break;
+            case 2:
+              // Highlighta Pork (Fläsk)
+              d3.select('.line-pork').style('opacity', 1);
+              break;
+            case 3:
+              // Highlighta Eggs (Ägg)
+              d3.select('.line-eggs').style('opacity', 1);
+              break;
+            case 4:
+              // Highlighta Hard Cheese (Hårdost)
+              d3.select('.line-hard-cheese').style('opacity', 1);
+              break;
+            case 5:
+              // Highlighta Carbonara Index
+              d3.select('.line-carbonara-index').style('opacity', 1);
+              break;
+          }
+        }
+
+        // Scrollama setup med D3 integration
+        const scroller = scrollama();
+        
+        scroller
+          .setup({
+            container: '#scrolly',
+            step: '.step',
+            offset: 0.5,
+            debug: false
+          })
+          .onStepEnter(response => {
+            const step = +response.element.dataset.step;
+            
+            // Uppdatera graf baserat på steg
+            highlightLine(step);
+            
+            // Markera aktivt textsteg
+            d3.selectAll('.step').classed('is-active', false);
+            d3.select(response.element).classed('is-active', true);
+          });
+      </script>
+    steps:
+      - description: "Nu kopplar vi ihop [bold pink]Scrollama[/] med [bold cyan]D3.js[/] för att skapa en komplett scrollytelling-upplevelse."
+        focus:
+          - type: syntax
+            lexer: "js"
+            theme: "ansi_dark"
+      - description: "Vår [bold orange]highlightLine()[/] funktion hanterar alla olika scroll-steg och highlighter rätt linje för varje steg"
+        focus:
+          - type: range
+            start: 15
+            end: 550
+            style: "bright_yellow bold"
+      - description: "Scrollama's [bold cyan]onStepEnter[/] callback anropar [bold orange]highlightLine()[/] varje gång användaren scrollar till ett nytt steg"
+        focus:
+          - type: range
+            start: 630
+            end: 890
+            style: "bright_cyan bold"
+      - description: "Resultatet är en [bold green]smidig integration[/] där scroll-position styr vilken del av grafen som är synlig"
+        focus:
+          - type: literal
+            text: "highlightLine(step)"
+            style: "bright_green bold"
+          - type: literal
+            text: "onStepEnter"
+            style: "bright_magenta bold"
+
+  - title: "Slutresultat"
+    type: bullet_points
+    bullet_points:
+      - text: "Interaktiv scrollytelling"
+        extra: "Användaren scrollar genom berättelsen och grafen [bold cyan]reagerar dynamiskt[/] på varje steg"
+      - text: "Guided data exploration"
+        extra: "Komplexiteten i datan presenteras [bold orange]steg för steg[/] vilket gör den mer tillgänglig"
+      - text: "Teknisk implementation"
+        extra: "[bold pink]D3.js[/] hanterar visualiseringen, [bold cyan]Scrollama[/] hanterar scroll-interaktionen"
+      - text: "Användarvänligt"
+        extra: "Kombinerar [bold green]storytelling[/] med [bold yellow]datavisualisering[/] för maximal impact"
+    style: "bright_green bold"

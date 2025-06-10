@@ -18,42 +18,26 @@
 <body>
 	<main>
 		<section id='intro'>
-			<h1 class='intro__hed'>Carbonara Index</h1>
-			<p>Scroll down to explore how each ingredient contributes to the carbonara price index over time.</p>
+			<h1 class='intro__hed'>Scrollama</h1>
 		</section>
 
 		<section id='scrolly'>
 			<figure>
-				<div id="chart"></div>
+				<div id="chart" style="border: 1px; background-color: aqua;">A NICE GRAPH</div>
 			</figure>
 
 			<article>
 				<div class='step' data-step='0'>
-					<p>The Carbonara Index tracks the price changes of key carbonara ingredients from 2015 to 2025.</p>
+					<p>Step 0</p>
 				</div>
 				<div class='step' data-step='1'>
-					<p><strong>Pasta</strong> shows the most volatile price movements, with significant spikes in 2021
-						and 2024.</p>
+					<p>Step 1</p>
 				</div>
 				<div class='step' data-step='2'>
-					<p><strong>Pork</strong> prices have remained relatively stable with a gradual upward trend over the
-						decade.</p>
+					<p>Step 2</p>
 				</div>
 				<div class='step' data-step='3'>
-					<p><strong>Eggs</strong> experienced dramatic price increases, particularly during 2022-2023 due to
-						avian flu outbreaks.</p>
-				</div>
-				<div class='step' data-step='4'>
-					<p><strong>Hard Cheese</strong> shows steady price growth with some acceleration in recent years.
-					</p>
-				</div>
-				<div class='step' data-step='5'>
-					<p>The <strong>Carbonara Index</strong> combines all ingredients, showing the overall trend in
-						carbonara affordability.</p>
-				</div>
-				<div class='step' data-step='6'>
-					<p>Comparing the <strong>Carbonara Index</strong> (solid line) with the <strong>KPI Index</strong>
-						(dashed line), we can see how carbonara inflation compares to general price inflation.</p>
+					<p>Step 3</p>
 				</div>
 			</article>
 		</section>
@@ -100,9 +84,10 @@
 		// Setup scrollama
 		scroller
 			.setup({
+				container: '#scrolly',
 				step: '.step',
 				offset: 0.5,
-				debug: false
+				debug: true
 			})
 			.onStepEnter(response => {
 				const step = +response.element.dataset.step;
@@ -113,8 +98,6 @@
 				d3.select(response.element).classed('is-active', true);
 			});
 
-		// Initialize with first step
-		highlightLine(0);
 
 	</script>
 </body>
