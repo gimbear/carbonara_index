@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>A simple graph</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+  </head>
+  <body>
+    <h1>D3 graph</h1>
+    <figure>
+      <div id="chart"></div>
+    </figure>
+    <script>
+      d3.json(
+        "https://raw.githubusercontent.com/gimbear/carbonara_index/refs/heads/main/carbonara_index.json"
+      ).then(function (data) {
+        // Parse dates from string format
+        const parseDate = d3.timeParse("%Y-%m");
+        data.forEach((d) => {
+          d.date = parseDate(d.date);
+        });
+
+        const margin = { top: 50, right: 150, bottom: 60, left: 50 };
+        const width = 900 - margin.left - margin.right;
+        const height = 500 - margin.top - margin.bottom;
+
+        const x = d3
+          .scaleTime()
+          .domain(d3.extent(data, (d) => d.date))
+          .range([0, width]);
+
+        const y = d3
+          .scaleLinear()
+          .domain([
+            90,
+            d3.max(data, (d) =>
+              Math.max(
+                d.Pasta,
+                d.Pork,
+                d.Eggs,
+                d["Hard Cheese"],
+                d.Carbonara_index
+              )
+            ),
+          ])
+          .range([height, 0]);
+
+        // https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/g
+        // <g> is used to group multiple SVG elements
+
+        const svg = d3
+          .select("#chart")
+          .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        svg
+          .append("g")
+          .attr("transform", `translate(0,${height})`)
+          .call(d3.axisBottom(x).tickFormat(d3.timeFormat("%Y")));
+
+        svg.append("g").call(d3.axisLeft(y));
+
+        svg
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x", 0 - height / 2)
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Price Index");
+
+        svg
+          .append("text")
+          .attr(
+            "transform",
+            `translate(${width / 2}, ${height + margin.bottom})`
+          )
+          .style("text-anchor", "middle")
+          .text("Year");
+      });
+    </script>
+  </body>
+</html>
+::
